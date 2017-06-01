@@ -26,7 +26,7 @@ object SqlStatementParser extends JavaTokenParsers {
   def parse(sql: String): Try[TokenizedStatement] = Try(parse(instr, sql).get)
 
   private val simpleLiteral: Parser[StringToken] =
-    "[^'^{]+".r ^^ { StringToken(_) }
+    "[^'{]+".r ^^ { StringToken(_) }
 
   private val instr: Parser[TokenizedStatement] = {
     @inline def normalize(t: StatementToken): Option[TokenGroup] = t match {
@@ -72,7 +72,7 @@ object SqlStatementParser extends JavaTokenParsers {
     "%".r ^^ { _ => PercentToken }
 
   private lazy val quotedLiteral: Parser[TokenGroup] = {
-    val simpleQuoted: Parser[StringToken] = "([^'^%])+".r ^^ { StringToken(_) }
+    val simpleQuoted: Parser[StringToken] = "([^'%])+".r ^^ { StringToken(_) }
 
     "'" ~> rep(reserved | simpleQuoted) <~ "'" ^^ { ts =>
       TokenGroup(StringToken("'") :: (ts :+ StringToken("'")), None)
